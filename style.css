@@ -3,22 +3,56 @@ html{
 }
 
 #setJeux1{
-    /*float: left;*/
     display: flex;
-    border: black;
     position:absolute;
     bottom:0;
+    left:25%;
+    justify-content: center;
+    align-items: center;
+}
+
+#setJeux2{
+    display: inline-block;
+    position:absolute;
+    margin: auto;
+    bottom:40%;
+    right:0;
+    justify-content: center;
+    align-items: center;
 }
 
 #setJeux3{
-    display: flex;    
+    display: flex;
+    position:absolute;
+    top:0;
+    left:25%;
+    justify-content: center;
+    align-items: center; 
 }
 
-#setJeux2, #setJeux4{
+#setJeux4{
     display: inline-block;
+    position:absolute;
+    margin: auto;
+    bottom:40%;
+    left:0;
+    justify-content: center;
+    align-items: center;
 }
 
-#setJeux1 div, #setJeux2 div, #setJeux3 div, #setJeux4 div{
-    width: 10%;
-    height: 300px;
+#setJeux1 div, #setJeux3 div{
+    width: 15vmin;
+    height: 20vmin;
+    margin-right:-10%;
+}
+
+#setJeux2 div,#setJeux4 div{
+    width: 15vmin;
+    height: 20vmin;
+    margin-bottom:-90%;
+}
+
+#setJeux1 div img, #setJeux2 div img, #setJeux3 div img, #setJeux4 div img{
+    width: 100%;
+    height: 100%;
 }
