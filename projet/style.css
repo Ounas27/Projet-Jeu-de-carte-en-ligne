@@ -1,0 +1,24 @@
+html{
+    background-color:#186a0e;
+}
+
+#setJeux1{
+    /*float: left;*/
+    display: flex;
+    border: black;
+    position:absolute;
+    bottom:0;
+}
+
+#setJeux3{
+    display: flex;    
+}
+
+#setJeux2, #setJeux4{
+    display: inline-block;
+}
+
+#setJeux1 div, #setJeux2 div, #setJeux3 div, #setJeux4 div{
+    width: 10%;
+    height: 300px;
+}
