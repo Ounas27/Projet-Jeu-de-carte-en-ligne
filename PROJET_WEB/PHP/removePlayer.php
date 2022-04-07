@@ -1,18 +1,28 @@
 <?php
+    // Bug à cause du timezone-set les heures définis sont de 2 heures en
 
-    $jsonString = file_get_contents('./js/players.json');
+   $filename="../js/players.json";
+    $f = fopen($filename, 'r+');
+    if (!flock($f, LOCK_EX))
+        http_response_code(409); // conflict
+    $jsonString = fread($f, filesize($filename));
     $players = json_decode($jsonString, true);
-
-
-    foreach($players as $player){
-        $timeplayer = strtotime($players[$player]['time']);
-        $currentTime = time();
-        $diff = $currentTime - $timeplayer;
-        var_dump($diff);
-        if ($diff < 60)
-            unset($player);
+    
+    if(!is_null($players)){
+        foreach($players as $player => $entry){
+            $timeplayer = strtotime($entry['time']);
+            $currentTime = date('H:i:s');
+            echo
+            $difference = round(abs($currentTime - $timeplayer),2);
+            echo "time : " .$difference;
+            if($difference > 60)
+                unset($players[$player]);
+        }
     }
-
     $newJsonString = json_encode($players, JSON_PRETTY_PRINT);
-    file_put_contents('./js/players.json', $newJsonString);
+    ftruncate($f, 0);
+    fseek($f,0);
+    fwrite($f, $newJsonString);
+    flock($f, LOCK_UN);
+    fclose($f);
 ?>

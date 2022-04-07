@@ -1,3 +1,7 @@
+<?php
+  if(!session_id()) session_start();
+?>
+
 <!doctype html>
 <html lang="fr">
 <head>
@@ -8,10 +12,9 @@
   <script src="./js/main.js"></script>
 </head>
   <body>
-  <!--<body onload="">-->
     <section class="left-area">
       <div id="formulaires">
-        <div id="form-inscrip" action="">
+        <div id="form-inscrip">
         <h3>Formulaire d'inscription</h3>
         <div class="username-div">
           <label for="username">Pseudo:</label>
