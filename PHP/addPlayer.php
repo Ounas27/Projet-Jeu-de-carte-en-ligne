@@ -4,7 +4,7 @@
     $pseudo = $_POST['pseudo'];
     //$_SESSION[$pseudo] = $pseudo;
     $niveau = $_POST['niveau'];
-    $time = date('H:i:s');
+    $time = date('Y-m-d H:i:s');
     $filename="../JSON/mainJoueurs.json";
     $f = fopen($filename, 'r+');
     if (!flock($f, LOCK_EX))
@@ -17,6 +17,7 @@
             'username' => $pseudo,
             'level' => $niveau,
             'time' => $time,
+            'connected' => "",
             'checkbox'=> "false"
         );
         $_SESSION[$pseudo] = $pseudo;

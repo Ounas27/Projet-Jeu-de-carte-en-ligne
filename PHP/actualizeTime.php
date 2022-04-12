@@ -1,7 +1,7 @@
 <?php
     date_default_timezone_set('Europe/Paris');
     $nom = $_POST['nom'];
-    $time = date('H:i:s');
+    $time = date('Y-m-d H:i:s');
     $filename="../JSON/mainJoueurs.json";
     $f = fopen($filename, 'r+');
     $players = null;

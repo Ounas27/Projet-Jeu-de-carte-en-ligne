@@ -114,9 +114,9 @@ function distributionCarte(){
 
 function playersRefresh(timeoutPeriod){
     setInterval(updatePlayers, timeoutPeriod);
-    //setInterval(actualisePlayerCurrentTime, timeoutPeriod);
-    //etInterval(launchGame, timeoutPeriod * 2);   
-    //setInterval(removePlayers, timeoutPeriod);                      
+    setInterval(actualisePlayerCurrentTime, timeoutPeriod);
+    //setInterval(launchGame, timeoutPeriod * 2);   
+    setInterval(removePlayers, timeoutPeriod);                      
 }
 
 function actualisePlayerCurrentTime(){
@@ -126,13 +126,12 @@ function actualisePlayerCurrentTime(){
             data:  {"nom":pseudo },        //La méthode cible (POST ou GET)
             url : '../PHP/actualizeTime.php' //Script Cible
          }).done(function(e){
-    
          }).fail(function(e){
          });
     }
 }
 
-function test(){
+/*function test(){
     $(document).ready(function(){
     $.ajax({
         method: 'POST',
@@ -148,13 +147,10 @@ function test(){
             else if(e[index_player]['checkbox']==="false" && document.getElementById("checkbox"+ index_player).checked == true){
                 document.getElementById("checkbox"+ index_player).checked = false;
             }
-    }
-}
- }).fail(function(e){
-
-     });
+        }
     });
-}
+    }
+}*/
 
 
 function updatePlayers(){
@@ -165,7 +161,7 @@ function updatePlayers(){
         dataType : "json",          //
         url : '../JSON/mainJoueurs.json' //Script Cible
      }).done(function(e){
-        test();
+        //test();
         //------------------------------------
         if(e != null){
             for(let index_player in e){
@@ -259,8 +255,8 @@ function removePlayers(){
         type: 'POST',        //La méthode cible (POST ou GET)
         url : '../PHP/removePlayer.php' //Script Cible
      }).done(function(e){
-         console.log(e);
      }).fail(function(e){
+         console.log("ERROR");
      });
 }
 

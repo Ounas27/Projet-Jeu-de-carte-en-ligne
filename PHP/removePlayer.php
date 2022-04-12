@@ -11,19 +11,17 @@
     
     if(!is_null($players)){
         foreach($players as $player => $entry){
-            $timeplayer = strtotime($entry['time']);
-            $currentTime = date('H:i:s');
-            echo
-            $difference = round(abs($currentTime - $timeplayer),2);
-            echo "time : " .$difference;
-            if($difference > 60)
+            $timeplayer = $entry['time'];
+            $currentTime = date('Y-m-d H:i:s');
+            $diff = abs(strtotime($currentTime) - strtotime($timeplayer));
+            if($diff > 60)
                 unset($players[$player]);
         }
+        $newJsonString = json_encode($players, JSON_PRETTY_PRINT);
+        ftruncate($f, 0);
+        fseek($f,0);
+        fwrite($f, $newJsonString);
+        flock($f, LOCK_UN);
+        fclose($f);
     }
-    $newJsonString = json_encode($players, JSON_PRETTY_PRINT);
-    ftruncate($f, 0);
-    fseek($f,0);
-    fwrite($f, $newJsonString);
-    flock($f, LOCK_UN);
-    fclose($f);
 ?>
