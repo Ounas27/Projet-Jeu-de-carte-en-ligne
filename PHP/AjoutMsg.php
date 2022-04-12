@@ -1,5 +1,4 @@
 <?php
-
     echo"<style>
         font-size: 45px;
     </style>";
@@ -16,5 +15,4 @@
     
     $newJsonString = json_encode($data, JSON_PRETTY_PRINT);
     file_put_contents('../JSON/messageChat.json', $newJsonString);
-    
 ?>

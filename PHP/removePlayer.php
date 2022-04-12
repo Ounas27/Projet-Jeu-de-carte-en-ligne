@@ -14,8 +14,10 @@
             $timeplayer = $entry['time'];
             $currentTime = date('Y-m-d H:i:s');
             $diff = abs(strtotime($currentTime) - strtotime($timeplayer));
-            if($diff > 60)
+            if($diff > 60){
+                echo $players[$player]['username'];
                 unset($players[$player]);
+            }
         }
         $newJsonString = json_encode($players, JSON_PRETTY_PRINT);
         ftruncate($f, 0);

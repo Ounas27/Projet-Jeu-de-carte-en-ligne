@@ -1,1 +1,9 @@
-[]
+[
+    {
+        "username": "Emeric",
+        "level": "1",
+        "time": "2022-04-12 17:44:46",
+        "connected": "",
+        "checkbox": "true"
+    }
+]

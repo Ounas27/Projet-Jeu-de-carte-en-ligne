@@ -1,13 +1,7 @@
 setInterval(majChat, 10);
-//setInterval(test, 100)
 playersRefresh(500);
 var pseudo = "";
 let players = Array();
-
-/*$(document).ready(function(){
-    playersRefresh(500);
-});
-*/
 
 function drag(ev){
     ev.dataTransfer.setData("text/plain", ev.target.id);
@@ -114,8 +108,7 @@ function distributionCarte(){
 
 function playersRefresh(timeoutPeriod){
     setInterval(updatePlayers, timeoutPeriod);
-    setInterval(actualisePlayerCurrentTime, timeoutPeriod);
-    //setInterval(launchGame, timeoutPeriod * 2);   
+    setInterval(actualisePlayerCurrentTime, timeoutPeriod); 
     setInterval(removePlayers, timeoutPeriod);                      
 }
 
@@ -131,28 +124,6 @@ function actualisePlayerCurrentTime(){
     }
 }
 
-/*function test(){
-    $(document).ready(function(){
-    $.ajax({
-        method: 'POST',
-        dataType : "json",          //
-        url : '../JSON/mainJoueurs.json' //Script Cible
-     }).done(function(e){ 
-        //------------------------------------
-        if(e != null){
-            for(let index_player in e){
-                if(e[index_player]['checkbox']==="true" && document.getElementById("checkbox"+ index_player).checked == false){
-                document.getElementById("checkbox"+ index_player).checked = true;
-                }
-            else if(e[index_player]['checkbox']==="false" && document.getElementById("checkbox"+ index_player).checked == true){
-                document.getElementById("checkbox"+ index_player).checked = false;
-            }
-        }
-    });
-    }
-}*/
-
-
 function updatePlayers(){
     let disabled = "";
     $(document).ready(function(){
@@ -161,8 +132,6 @@ function updatePlayers(){
         dataType : "json",          //
         url : '../JSON/mainJoueurs.json' //Script Cible
      }).done(function(e){
-        //test();
-        //------------------------------------
         if(e != null){
             for(let index_player in e){
                 let ligne = $("#listing-players #tr" + index_player);                
@@ -171,54 +140,63 @@ function updatePlayers(){
                     $("#listing-players").append("<tr id='tr"+index_player+"'><td class='1'>"+ players[index_player]['username']+"</td><td class='2'>"+ players[index_player]['level'] + "</td><td class='3'><input id='checkbox"+ index_player +"'type='checkbox' value='"+ players[index_player]['username'] +"'</td></tr>");
                 }
                 else{
-
-                    if(document.getElementById("checkbox"+ index_player).checked && e[index_player]['checkbox']==="false"){
-                        $.ajax({
-                            type: 'POST',
-                            data:  { "box_checked": 'true', "pseudo" : e[index_player]['username']},        //La méthode cible (POST ou GET)
-                            url : '../PHP/playerSelected.php' //Script Cible
-                         }).done(function(e){
-                            console.log(e);
-                         }).fail(function(e){
-                         });   
+                    /*
+                    if(document.getElementById("checkbox"+ index_player).checked){
+                        if(e[index_player]['checkbox']==="false"){
+                            $.ajax({
+                                type: 'POST',
+                                data:  { "box_checked": 'true', "pseudo" : e[index_player]['username']},        //La méthode cible (POST ou GET)
+                                url : '../PHP/playerSelected.php' //Script Cible
+                             }).done(function(e){
+                                console.log(e);
+                             }).fail(function(e){
+                             });
+                        }
                     }
-                    
-                    else if(!(document.getElementById("checkbox"+ index_player).checked) && e[index_player]['checkbox']==="true"){
-                        $.ajax({
-                            type: 'POST',
-                            data:  { "box_checked": 'false', "pseudo" : e[index_player]['username']},        //La méthode cible (POST ou GET)
-                            url : '../PHP/playerSelected.php' //Script Cible
-                         }).done(function(e){
-                            console.log(e);
-                         }).fail(function(e){
-                         });   
+                    else {
+                        if(e[index_player]['checkbox']==="true"){
+                            $.ajax({
+                                type: 'POST',
+                                data:  { "box_checked": 'false', "pseudo" : e[index_player]['username']},        //La méthode cible (POST ou GET)
+                                url : '../PHP/playerSelected.php' //Script Cible
+                             }).done(function(e){
+                                console.log(e);
+                             }).fail(function(e){
+                             });  
+                        }
                     }
-                     
-                                                
-                    //$("input[type=checkbox][name=gender]:checked").val())
+                    */
+                    // if(document.getElementById("checkbox"+ index_player).checked && e[index_player]['checkbox']==="false"){
+                    //     $.ajax({
+                    //         type: 'POST',
+                    //         data:  { "box_checked": 'true', "pseudo" : e[index_player]['username']},        //La méthode cible (POST ou GET)
+                    //         url : '../PHP/playerSelected.php' //Script Cible
+                    //      }).done(function(e){
+                    //         console.log(e);
+                    //      }).fail(function(e){
+                    //      });   
+                    // }
+                    // else if(!(document.getElementById("checkbox"+ index_player).checked) && e[index_player]['checkbox']==="true"){
+                    //     $.ajax({
+                    //         type: 'POST',
+                    //         data:  { "box_checked": 'false', "pseudo" : e[index_player]['username']},        //La méthode cible (POST ou GET)
+                    //         url : '../PHP/playerSelected.php' //Script Cible
+                    //      }).done(function(e){
+                    //         console.log(e);
+                    //      }).fail(function(e){
+                    //      });   
+                    // }
                 }
-                
-            
             } 
-        } 
-        /*const cb = document.querySelector('#accept');
-        console.log(cb.checked)*/   
-        
-        // --- Parti de code à garder au cas où
-        /*if(players.length < 4){
-            disabled = "disabled";
-            $("#username-i").prop("disabled", false);
-            $("#levels-sel").prop("disabled", false);
-            $("#start-game").prop("disabled", false);
+            if($("#listing-players #btn-start-game").length == 0)
+                $("#listing-players").append("<tr id='btn-start-game'><td><input type='submit' id='start-game' name='start-game' value='Commencer la partie' onclick='launchGame()'" + disabled +"></td></tr>");
+            else{
+                $("listing-players #btn-start-game").empty();
+                $("listing-players #btn-start-game").append("<td><input type='submit' id='start-game' name='start-game' value='Commencer la partie' onclick='launchGame()'" + disabled +"></td>");
+            }
         }
-        else if(players.length >= 4){
-            $("#username-i").prop("disabled", true);
-            $("#levels-sel").prop("disabled", true);
-            $("#start-game").prop("disabled", true);
-        }*/
-        //$("#listing-players").append("<tr id='btn-start-game'><td><form action='./PHP/game.php/?gameState=true' method='post'><input type='submit' id='start-game' name='start-game' value='Commencer la partie'" + disabled +"></form></td></tr>");
      }).fail(function(e){
-
+        console.log(e);
      });
     });
 }
@@ -255,6 +233,14 @@ function removePlayers(){
         type: 'POST',        //La méthode cible (POST ou GET)
         url : '../PHP/removePlayer.php' //Script Cible
      }).done(function(e){
+         for(let i in players){
+             if(players[i]['username'] == e){
+                 const index = players.indexOf(i);
+                 if (index > -1){
+                     players.splice(index, 1);
+                }
+            }
+         }
      }).fail(function(e){
          console.log("ERROR");
      });
@@ -264,11 +250,11 @@ function launchGame(){
     $.ajax({
         type: 'POST',
         datatype: "json",
-        url: '../PHP/redirectPlayerstoGame.php'
+        url: '../PHP/game.php'
     }).done(function(e){
-        if(e === "true")
-            window.location = "./PHP/game.php";
+        $("#waiting-room").css('display', 'none');
+        $("#game-frame").css('display', 'block');
     }).fail(function(e){
+        console.log('fail');
     });
 }
-

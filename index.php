@@ -50,8 +50,51 @@ if (!session_id()) session_start();
   </table>
   </section>
   </div>
-  <div id="game">
+  <div id="game-frame">
+  <?php
+            echo"<div id=setJeux1>
+                    <div><img id=carte1 draggable='true' ondragstart = 'drag(event)' src=''></div>
+                    <div><img id=carte2 draggable='true' ondragstart = 'drag(event)'  src=''></div>
+                    <div><img id=carte3 draggable='true' ondragstart = 'drag(event)'  src=''></div>
+                    <div><img id=carte4 draggable='true' ondragstart = 'drag(event)' src=''></div>
+                    <div><img id=carte5 draggable='true' ondragstart = 'drag(event)' src=''></div>
+                </div>
 
+                <div id=setJeux2>
+                    <div id=carte1><img src='../ImagesCartes/0_3.png'></div>
+                    <div id=carte2><img src='../ImagesCartes/0_3.png'></div>
+                    <div id=carte3><img src='../ImagesCartes/0_3.png'></div>
+                    <div id=carte4><img src='../ImagesCartes/0_3.png'></div>
+                    <div id=carte5><img src='../ImagesCartes/0_3.png'></div>
+                </div>
+
+                <div id=setJeux3>
+                    <div id=carte1><img src='../ImagesCartes/0_3.png'></div>
+                    <div id=carte2><img src='../ImagesCartes/0_3.png'></div>
+                    <div id=carte3><img src='../ImagesCartes/0_3.png'></div>
+                    <div id=carte4><img src='../ImagesCartes/0_3.png'></div>
+                    <div id=carte5><img src='../ImagesCartes/0_3.png'></div>
+                </div>
+
+                <div id=setJeux4>
+                    <div id=carte1><img src='../ImagesCartes/0_3.png'></div>
+                    <div id=carte2><img src='../ImagesCartes/0_3.png'></div>
+                    <div id=carte3><img src='../ImagesCartes/0_3.png'></div>
+                    <div id=carte4><img src='../ImagesCartes/0_3.png'></div>
+                    <div id=carte5><img src='../ImagesCartes/0_3.png'></div>
+                </div>";
+
+
+            echo"<div id=tapisJeux ondrop='drop(event)' ondragover='allow_drop(event)'>
+                </div>";
+
+            echo"<div id=chat>
+                    <input type='text' id='messageAEnvoyer' required>
+                    <button onclick='envoyerMessage()'>Envoyer</button>
+                    <div id=messageCourant>
+                    </div>
+                </div>";
+        ?> 
   </div>
 </body>
 
