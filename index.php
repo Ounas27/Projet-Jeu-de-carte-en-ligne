@@ -9,6 +9,7 @@ if (!session_id()) session_start();
   <meta charset="utf-8">
   <title>Main</title>
   <link rel="stylesheet" href="../CSS/index.css">
+  <link rel="stylesheet" href="../CSS/style.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="../js/main.js"></script>
 </head>

@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <link href="style.css" rel="stylesheet">
+    <link href="../CSS/style.css" rel="stylesheet">
     <script src="../js/main.js"> </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <title>Projet Site 2022</title>
@@ -52,6 +52,7 @@
                     <div id=messageCourant>
                     </div>
                 </div>";
+            require('distributionCarte.php');
         ?>    
     </body>
 

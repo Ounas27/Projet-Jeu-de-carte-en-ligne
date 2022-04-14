@@ -1,0 +1,27 @@
+{
+    "joueurs": [
+        {
+            "pseudo": "NAME",
+            "cartes": []
+        },
+        {
+            "pseudo": "NAME",
+            "cartes": []
+        },
+        {
+            "pseudo": "NAME",
+            "cartes": []
+        },
+        {
+            "pseudo": "NAME",
+            "cartes": []
+        }
+    ],
+    "messageJeu": [
+        {
+            "message": "jdzndehz",
+            "nomJoueur": "jndfhz"
+        }
+    ],
+    "deck": []
+}

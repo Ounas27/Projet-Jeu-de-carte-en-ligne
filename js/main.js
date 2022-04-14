@@ -137,63 +137,27 @@ function updatePlayers(){
                 let ligne = $("#listing-players #tr" + index_player);                
                 if(ligne.length == 0){
                     players[index_player] = e[index_player];
-                    $("#listing-players").append("<tr id='tr"+index_player+"'><td class='1'>"+ players[index_player]['username']+"</td><td class='2'>"+ players[index_player]['level'] + "</td><td class='3'><input id='checkbox"+ index_player +"'type='checkbox' value='"+ players[index_player]['username'] +"'</td></tr>");
+                    $("#listing-players").append("<tr id='tr"+index_player+"'><td class='1'>"+ players[index_player]['username']+"</td><td class='2'>"+ players[index_player]['level'] + "</td><td class='3'><input id='checkbox"+ index_player +"'type='radio' value='"+ players[index_player]['username'] +"'</td></tr>");
                 }
                 else{
-                    /*
-                    if(document.getElementById("checkbox"+ index_player).checked){
-                        if(e[index_player]['checkbox']==="false"){
-                            $.ajax({
-                                type: 'POST',
-                                data:  { "box_checked": 'true', "pseudo" : e[index_player]['username']},        //La méthode cible (POST ou GET)
-                                url : '../PHP/playerSelected.php' //Script Cible
-                             }).done(function(e){
-                                console.log(e);
-                             }).fail(function(e){
-                             });
-                        }
-                    }
-                    else {
-                        if(e[index_player]['checkbox']==="true"){
-                            $.ajax({
-                                type: 'POST',
-                                data:  { "box_checked": 'false', "pseudo" : e[index_player]['username']},        //La méthode cible (POST ou GET)
-                                url : '../PHP/playerSelected.php' //Script Cible
-                             }).done(function(e){
-                                console.log(e);
-                             }).fail(function(e){
-                             });  
-                        }
-                    }
-                    */
-                    // if(document.getElementById("checkbox"+ index_player).checked && e[index_player]['checkbox']==="false"){
-                    //     $.ajax({
-                    //         type: 'POST',
-                    //         data:  { "box_checked": 'true', "pseudo" : e[index_player]['username']},        //La méthode cible (POST ou GET)
-                    //         url : '../PHP/playerSelected.php' //Script Cible
-                    //      }).done(function(e){
-                    //         console.log(e);
-                    //      }).fail(function(e){
-                    //      });   
-                    // }
-                    // else if(!(document.getElementById("checkbox"+ index_player).checked) && e[index_player]['checkbox']==="true"){
-                    //     $.ajax({
-                    //         type: 'POST',
-                    //         data:  { "box_checked": 'false', "pseudo" : e[index_player]['username']},        //La méthode cible (POST ou GET)
-                    //         url : '../PHP/playerSelected.php' //Script Cible
-                    //      }).done(function(e){
-                    //         console.log(e);
-                    //      }).fail(function(e){
-                    //      });   
-                    // }
+                    if(e[index_player]['checkbox'] === "true")
+                        document.getElementById("checkbox"+index_player).checked = true;
+                    else
+                        document.getElementById("checkbox"+index_player).checked = false;
                 }
             } 
-            if($("#listing-players #btn-start-game").length == 0)
-                $("#listing-players").append("<tr id='btn-start-game'><td><input type='submit' id='start-game' name='start-game' value='Commencer la partie' onclick='launchGame()'" + disabled +"></td></tr>");
-            else{
-                $("listing-players #btn-start-game").empty();
-                $("listing-players #btn-start-game").append("<td><input type='submit' id='start-game' name='start-game' value='Commencer la partie' onclick='launchGame()'" + disabled +"></td>");
-            }
+        }
+        if(players.length >= 4){
+            disabled = "";
+        }
+        else {
+            disabled = "disabled";
+        }
+        if($("#tab-players #zone-btn").length == 0)
+            $("#tab-players").append("<div id='zone-btn'><tr id='btn-start-game'><td><input type='submit' id='start-game' name='start-game' value='Commencer la partie' onclick='launchGame()'" + disabled +"></td></tr></div>");
+        else{
+            $("#tab-players #zone-btn").empty();
+            $("#tab-players #zone-btn").append("<tr id='btn-start-game'><td><input type='submit' id='start-game' name='start-game' value='Commencer la partie' onclick='launchGame()'" + disabled +"></td></tr>");
         }
      }).fail(function(e){
         console.log(e);
@@ -257,4 +221,9 @@ function launchGame(){
     }).fail(function(e){
         console.log('fail');
     });
+}
+
+
+function gameLaunched(){
+    
 }
