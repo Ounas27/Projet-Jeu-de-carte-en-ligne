@@ -134,25 +134,32 @@ function updatePlayers(){
      }).done(function(e){
         if(e != null){
             for(let index_player in e){
-                let ligne = $("#listing-players #tr" + index_player);                
-                if(ligne.length == 0){
-                    players[index_player] = e[index_player];
-                    $("#listing-players").append("<tr id='tr"+index_player+"'><td class='1'>"+ players[index_player]['username']+"</td><td class='2'>"+ players[index_player]['level'] + "</td><td class='3'><input id='checkbox"+ index_player +"'type='radio' value='"+ players[index_player]['username'] +"'</td></tr>");
+                if(e[index_player]["connected"] === ""){
+                    let ligne = $("#listing-players #tr" + index_player);                
+                    if(ligne.length == 0){
+                        players[index_player] = e[index_player];
+                        $("#listing-players").append("<tr id='tr"+index_player+"'><td class='1'>"+ players[index_player]['username']+"</td><td class='2'>"+ players[index_player]['level'] + "</td><td class='3'><input id='checkbox"+ index_player +"'type='radio' value='"+ players[index_player]['username'] +"'</td></tr>");
+                    }
+                    else{
+                        if(e[index_player]['checkbox'] === "true")
+                            document.getElementById("checkbox"+index_player).checked = true;
+                        else
+                            document.getElementById("checkbox"+index_player).checked = false;
+                    }
                 }
                 else{
-                    if(e[index_player]['checkbox'] === "true")
-                        document.getElementById("checkbox"+index_player).checked = true;
-                    else
-                        document.getElementById("checkbox"+index_player).checked = false;
+                    $("#listing-players #tr" + index_player).empty();
                 }
+
             } 
         }
-        if(players.length >= 4){
+        // A remettre pour avoir le bouton enabled seulement si 4 joueurs logged
+        /*if(players.length >= 4){
             disabled = "";
         }
         else {
             disabled = "disabled";
-        }
+        }*/
         if($("#tab-players #zone-btn").length == 0)
             $("#tab-players").append("<div id='zone-btn'><tr id='btn-start-game'><td><input type='submit' id='start-game' name='start-game' value='Commencer la partie' onclick='launchGame()'" + disabled +"></td></tr></div>");
         else{
@@ -216,6 +223,7 @@ function launchGame(){
         datatype: "json",
         url: '../PHP/game.php'
     }).done(function(e){
+        console.log(e);
         $("#waiting-room").css('display', 'none');
         $("#game-frame").css('display', 'block');
     }).fail(function(e){
@@ -224,6 +232,14 @@ function launchGame(){
 }
 
 
-function gameLaunched(){
-    
+function gameLaunchedForPlayer(){
+    $.ajax({
+        method: 'POST',
+        dataType : "json",          //
+        url : '../JSON/mainJoueurs.json' //Script Cible
+     }).done(function(e){
+        console.log(e);
+     }).fail(function(e){
+        console.log(e);
+     });
 }
