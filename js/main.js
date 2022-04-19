@@ -1,8 +1,28 @@
-setInterval(majChat, 10);
-playersRefresh(500);
+// Déclarations des variables locales au fichier 
 var pseudo = "";
+var url_partie = "";
+var ingame = false;
+var testInterval;
 let players = Array();
+playersRefresh(500);
 
+
+// Fonction nous permettant de répéter constamment les fonctions nécessaires
+function playersRefresh(timeoutPeriod){
+    setInterval(updatePlayers, timeoutPeriod);
+    setInterval(actualisePlayerCurrentTime, timeoutPeriod); 
+    setInterval(removePlayers, timeoutPeriod);
+    testInterval = setInterval(gameLaunchedForPlayer,timeoutPeriod);
+    setInterval(majTapis, timeoutPeriod);
+    setInterval(majChat, timeoutPeriod);
+    setInterval(allowedtoDrop, timeoutPeriod);
+    setInterval(gameFinished, timeoutPeriod);
+    
+}
+
+/**
+ * PARTIE CONCERNANT LE DRAG AND DROP DES CARTES SUR LE TAPIS
+ */
 function drag(ev){
     ev.dataTransfer.setData("text/plain", ev.target.id);
 }
@@ -16,104 +36,190 @@ function drop(ev){
     var data = ev.dataTransfer.getData("text/plain");
 
     let d = $("#"+data);
-    let t = $("#tapisJeux");
+    let t = $("#"+ev.target.id);
     let  maDiv = $("<div></div>");
     maDiv.append(d);
     t.append(maDiv);
+    //conversion de l'id de l'img en nombre
+    let carteTapis = data.split("_").map(Number);
+    // appel ajax pour changer l'etat de la carte deposee sur le tapis
+    if(ev.target.id == "tapisJeux"){
+        $.ajax({
+            method: 'POST',
+            data: {"url" : url_partie, "pseudo" : pseudo ,"couleur" : carteTapis[0], "valeur" : carteTapis[1]},
+            url : "../PHP/poserTapis.php",
+        }).done(function(data){
+            //Modification du champs derniereCarte du fichier JSON
+            $.ajax({
+                method: 'POST',
+                data : {"url" : url_partie},
+                url : '../PHP/dernierDepot.php',
+            }).done(function(data){
+            }).fail(function(data){
+            });
+
+        }).fail(function(data){
+        });
+    }
 }
 
-function envoyerMessage(){
-    //distributionCarte(); appeler cette fonction a un autre endroit
-    let msg =$("#messageAEnvoyer").val();
-    $.ajax({
-        method: "POST",
-        data : {"Message" : msg },
-        url: "AjoutMsg.php"
-        }).done(function(e) {
-        }).fail(function(e) {
-            console.log(e);
-        });    
-}
 
-function majChat(){
+// fonction permettant au joueur de poser une carte si c'est son tour
+function allowedtoDrop(){
     $.ajax({
-        method: "GET",
-        url: "../JSON/messageChat.json",
-        }).done(function(e) {
-        $("#messageCourant").empty();
-        for(var donneeChat in e){
-            let nomJoueur = e[donneeChat]["Joueur"];
-            let msgJoueur = e[donneeChat]["Message"];
-            $("#messageCourant").append(nomJoueur+" : "+msgJoueur+"<br>");
+        method : 'GET',
+        dataType : 'json',
+        url : url_partie
+    }).done(function(e){
+        var indexJoueur = e["joueurCourant"];
+        if(e["joueurs"][indexJoueur]["pseudo"] === pseudo){
+            $("#tapisJeux").attr('ondragover','allow_drop(event)');
+            /*$("#setJeux1").children('div').each(function () {
+                // "this" est l'élement courant de la boucle
+                var lienImage = $(this).children('img').attr('id');
+                $("#"+lienImage).attr('draggable',true);
+            });*/
         }
-        }).fail(function(e) {
-            console.log('fail');
+        
+        else{
+            $("#tapisJeux").attr('ondragover','');
+            /*
+            $("#setJeux1").children('div').each(function () {
+                // "this" est l'élement courant de la boucle
+                var lienImage = $(this).children('img').attr('id');
+                $("#"+lienImage).attr('draggable',false);
+            });*/
+
+        }
+    }).fail(function(e){
+        console.log('fail');
     });
 }
 
-function distributionCarte(){
-    var myArray = ['../ImagesCartes/1_1.png', '../ImagesCartes/1_2.png', '../ImagesCartes/1_3.png', '../ImagesCartes/1_4.png', 
-                    '../ImagesCartes/1_5.png', '../ImagesCartes/1_6.png', '../ImagesCartes/1_7.png', '../ImagesCartes/1_8.png', 
-                    '../ImagesCartes/1_9.png', '../ImagesCartes/1_10.png', '../ImagesCartes/1_11.png', '../ImagesCartes/1_12.png', 
-                    '../ImagesCartes/1_13.png','../ImagesCartes/2_1.png', '../ImagesCartes/2_2.png', '../ImagesCartes/2_3.png', 
-                    '../ImagesCartes/2_4.png', '../ImagesCartes/2_5.png', '../ImagesCartes/2_6..png', '../ImagesCartes/2_7.png', 
-                    '../ImagesCartes/2_8.png', '../ImagesCartes/2_9.png', '../ImagesCartes/2_10.png', '../ImagesCartes/2_11.png', 
-                    '../ImagesCartes/2_12.png', '../ImagesCartes/2_13.png','../ImagesCartes/3_1.png', '../ImagesCartes/3_2.png', 
-                    '../ImagesCartes/3_3.png', '../ImagesCartes/3_4.png', '../ImagesCartes/3_5.png', '../ImagesCartes/3_6.png', 
-                    '../ImagesCartes/3_7.png', '../ImagesCartes/3_8.png', '../ImagesCartes/3_9.png', '../ImagesCartes/3_10.png', 
-                    '../ImagesCartes/3_11.png', '../ImagesCartes/3_12.png', '../ImagesCartes/3_13.png','../ImagesCartes/4_1.png',
-                    '../ImagesCartes/4_2.png', '../ImagesCartes/4_3.png', '../ImagesCartes/4_4.png', '../ImagesCartes/4_5.png', 
-                    '../ImagesCartes/4_6.png', '../ImagesCartes/4_7.png', '../ImagesCartes/4_8.png', '../ImagesCartes/4_9.png', 
-                    '../ImagesCartes/4_10.png', '../ImagesCartes/4_11.png', '../ImagesCartes/4_12.png', '../ImagesCartes/4_13.png'];
-    var carteJ1=[];
-    var carteJ2=[];
-    var carteJ3=[];
-    var carteJ4=[];
-    var numJoueur="";
-    
-    for(var j = 0; j < 4; j++){
-        if(j==0)
-            numJoueur = "carteJ1";
-        else if(j==1)
-            numJoueur = "carteJ2";
-        else if(j==2)
-            numJoueur = "carteJ3";
-        else
-            numJoueur = "carteJ4";
-        
-        for(var i = 0; i < 5; i++){            
-            var indexCarte = Math.floor(Math.random() * ((myArray.length)-1));
-            eval(numJoueur).push(myArray[indexCarte]);
-            myArray.splice(indexCarte,1);
-        }
-    }
-    
+
+// fonction pour mettre à jour le tapis de cartes
+function majTapis(){
     $.ajax({
-        method: "POST",
-        data : {"carteJ1" : carteJ1,
-                "carteJ2" : carteJ2,
-                "carteJ3" : carteJ3, 
-                "carteJ4" : carteJ4},
-        url: "../PHP/EnregistrerCarteJoueurs.php"
+        method: "GET",
+        dataType : "json",
+        url: url_partie,
         }).done(function(e) {
+        $("#tapisJeux").empty();
+        if(e != null){
+            for(var carteTapis in e['pileTapis']){
+                var couleurCarte = e["pileTapis"][carteTapis]["Couleur"];
+                var valeurCarte = e["pileTapis"][carteTapis]["Valeur"];
+                var maDiv = document.createElement("div");
+                var monimg = document.createElement("img");
+                monimg.setAttribute("id",couleurCarte+"_"+valeurCarte);
+                monimg.setAttribute("draggable", true);
+                monimg.setAttribute("ondragstart",'drag(event)');
+                monimg.setAttribute("src","../ImagesCartes/"+couleurCarte+"_"+valeurCarte+".png");
+                maDiv.appendChild(monimg);
+                document.getElementById("tapisJeux").appendChild(maDiv);
+            }
+            /*
+            // ouaip
+            for(let i = 0; i < 4; i++){
+                for(let pas = 0; pas < 5; pas++){ 
+                    if(e["joueurs"][i]["cartes"][pas]["carteTapis"]){
+                        var couleurCarte = e["joueurs"][i]["cartes"][pas]["Couleur"];
+                        var valeurCarte = e["joueurs"][i]["cartes"][pas]["Valeur"];
+                        var maDiv = document.createElement("div");
+                        var monimg = document.createElement("img");
+                        monimg.setAttribute("id",couleurCarte+"_"+valeurCarte);
+                        monimg.setAttribute("draggable", true);
+                        monimg.setAttribute("ondragstart",'drag(event)');
+                        monimg.setAttribute("src","../ImagesCartes/"+couleurCarte+"_"+valeurCarte+".png");
+                        maDiv.appendChild(monimg);
+                        document.getElementById("tapisJeux").appendChild(maDiv);
+                    }
+                }
+            }*/
+        }
         }).fail(function(e) {
-            console.log(e);
-        });
-        document.getElementById("carte1").setAttribute("src", carteJ1[0]);
-        document.getElementById("carte2").setAttribute("src", carteJ1[1]);
-        document.getElementById("carte3").setAttribute("src", carteJ1[2]);
-        document.getElementById("carte4").setAttribute("src", carteJ1[3]);
-        document.getElementById("carte5").setAttribute("src", carteJ1[4]);
+    });
 }
 
-function playersRefresh(timeoutPeriod){
-    setInterval(updatePlayers, timeoutPeriod);
-    setInterval(actualisePlayerCurrentTime, timeoutPeriod); 
-    setInterval(removePlayers, timeoutPeriod);                      
+/**
+ * PARTIE CONCERNANT LES MESSAGES ENTRE JOUEURS
+ */
+function envoyerMessage(){
+    let msg =$("#messageAEnvoyer").val();
+    let ligne = $("#zoneDepotCartes");
+    if(!(ligne.length == 0)){   
+        $("#zoneDepotCartes").children('div').each(function () {
+            // "this" est l'élement courant de la boucle
+            //console.log($(this).children('img').attr('src'));
+            var lienImage = $(this).children('img').attr('src');
+            $.ajax({
+                method: "POST",
+                data : {"Message" : lienImage, "url" : url_partie, "pseudo" : pseudo, "estCarte" : true},
+                url: "../PHP/AjoutMsg.php"
+                }).done(function(e) {
+                    $('#zoneDepotCartes').children('div').each(function () {
+                        affichageCarte();
+                        this.remove();
+                    });
+                }).fail(function(e) {
+                    console.log("error");
+                });  
+        });
+
+        //ici
+        
+    } 
+
+    //appel ajax pour envoyer le message du joueur
+    if(msg !== ""){
+       $.ajax({
+        method: "POST",
+        data : {"Message" : msg, "url" : url_partie, "pseudo" : pseudo, "estCarte" : false},
+        url: "../PHP/AjoutMsg.php"
+        }).done(function(e) {
+            $("#messageAEnvoyer").val('');
+        }).fail(function(e) {
+            console.log("error");
+        });    
+    }
 }
+
+function majChat(){
+    //appel ajax pour mettre a jour le chat
+    $.ajax({
+        method: "GET",
+        dataType : "json",
+        url: url_partie,
+        }).done(function(e) {
+        $("#messageCourant").empty();
+        // maintenant on le met dans l'id
+        for(var donneeChat in e["messageJeu"]){
+            if(e["messageJeu"][donneeChat]["estCarte"] === "true"){
+                let idImg = e["messageJeu"][donneeChat]["message"].substr(16, 3);
+                var maDiv = document.createElement("div");
+                var monimg = document.createElement("img");
+                monimg.setAttribute("src",e["messageJeu"][donneeChat]["message"]);
+                monimg.setAttribute("id", idImg);
+                maDiv.appendChild(monimg);
+                $("#messageCourant").append(maDiv);
+            }
+            else {
+                let nomJoueur = e["messageJeu"][donneeChat]["nomJoueur"];
+                let msgJoueur = e["messageJeu"][donneeChat]["message"];
+                $("#messageCourant").append(nomJoueur+" : "+msgJoueur+"<br>");
+            }
+        }
+        }).fail(function(e) {
+    });
+}
+
+/**
+ * PARTIE CONCERNANT LES JOUEURS
+ */
 
 function actualisePlayerCurrentTime(){
     if(pseudo != ""){
+        //appel ajax pour mettre à jour l'heure du joueur pour savoir s'il est connecte
         $.ajax({
             type: 'POST',
             data:  {"nom":pseudo },        //La méthode cible (POST ou GET)
@@ -127,6 +233,7 @@ function actualisePlayerCurrentTime(){
 function updatePlayers(){
     let disabled = "";
     $(document).ready(function(){
+    //appel ajax pour mettre à jour le tableau contenant les joueurs inscrits
     $.ajax({
         method: 'POST',
         dataType : "json",          //
@@ -134,7 +241,7 @@ function updatePlayers(){
      }).done(function(e){
         if(e != null){
             for(let index_player in e){
-                if(e[index_player]["connected"] === ""){
+                if(e[index_player]["connectedJSON"] === ""){
                     let ligne = $("#listing-players #tr" + index_player);                
                     if(ligne.length == 0){
                         players[index_player] = e[index_player];
@@ -171,6 +278,8 @@ function updatePlayers(){
      });
     });
 }
+
+// fonction oermettant d'ajouter un joueur à la liste des joueurs en attente
 function addPlayer(){
     pseudo = $("#username-i").val();
     let niveau = $("#levels-sel").val();
@@ -191,6 +300,7 @@ function addPlayer(){
     }
 }
 
+// fonction vérifiant que le pseudo du joueur souhaitant s'inscrire n'est pas deja utilise
 function usernameExisted(name){
     for(let i = 0; i < players.length; i++){
         if(name === players[i]['username'])
@@ -199,6 +309,7 @@ function usernameExisted(name){
     return false;
 }
 
+// fonction permettant de supprimer les joueurs deconnectes
 function removePlayers(){
     $.ajax({
         type: 'POST',        //La méthode cible (POST ou GET)
@@ -217,15 +328,20 @@ function removePlayers(){
      });
 }
 
+/**
+ * PARTIE CONCERNANT LE LANCEMENT DE PARTIE
+ */
 function launchGame(){
+    // en cas de clic sur le bouton
+    //appel ajax pour créer une partie pour les 4 joueurs
     $.ajax({
         type: 'POST',
         datatype: "json",
-        url: '../PHP/game.php'
+        url: '../PHP/CreationPartie.php'
     }).done(function(e){
-        console.log(e);
         $("#waiting-room").css('display', 'none');
         $("#game-frame").css('display', 'block');
+        affichageCarte(); //comme ca ?
     }).fail(function(e){
         console.log('fail');
     });
@@ -233,13 +349,103 @@ function launchGame(){
 
 
 function gameLaunchedForPlayer(){
+    // appel ajax pour vérifier qu'une partie a bien été créée et lancée pour changer l'affichage des joueurs
     $.ajax({
         method: 'POST',
         dataType : "json",          //
         url : '../JSON/mainJoueurs.json' //Script Cible
      }).done(function(e){
-        console.log(e);
+        for(let index in e){
+            if(e[index]['username'] === pseudo && e[index]['connectedJSON'] !== ""){
+                $("#waiting-room").css('display', 'none');
+                $("#game-frame").css('display', 'block');
+                ingame = true;
+                url_partie = e[index]['connectedJSON'];
+                affichageCarte();
+                // Supprimer joueur de la waiting room
+                $.ajax({
+                    method : 'POST',
+                    data : {"pseudo" : pseudo},
+                    url : '../PHP/removePlayerofWaitingRoom.php'
+                }).done(function(data){
+                    console.log('done');
+                }).fail(function(data){
+                    console.log('fail');
+                });
+                clearInterval(testInterval);
+            }
+        }
      }).fail(function(e){
-        console.log(e);
+        console.log("error");
      });
+}
+
+// fonction permettant d'afficher les cartes générées pour le joueur
+function affichageCarte(){
+    $.ajax({
+        method: "GET",
+        dataType : "json",
+        url: url_partie,
+        }).done(function(e) {
+            $("#setJeux1").empty();
+            for(let i = 0; i < 4; i ++){
+                if(pseudo === e.joueurs[i].pseudo){
+                    for(let pas = 0; pas < 5; pas++){
+                        if(!(e.joueurs[i].cartes[pas].carteTapis)){
+                            var couleurCarte = e.joueurs[i].cartes[pas].Couleur;
+                            var valeurCarte = e.joueurs[i].cartes[pas].Valeur;
+                            var maDiv = document.createElement("div");
+                            var monimg = document.createElement("img");
+                            monimg.setAttribute("id",couleurCarte+"_"+valeurCarte);
+                            monimg.setAttribute("draggable", true);
+                            monimg.setAttribute("ondragstart",'drag(event)')
+                            monimg.setAttribute("src","../ImagesCartes/"+couleurCarte+"_"+valeurCarte+".png");
+                            maDiv.appendChild(monimg);
+                            document.getElementById("setJeux1").appendChild(maDiv);  
+                        } 
+                    }
+                }
+            }
+            
+        }).fail(function(e) {
+            console.log('fail');
+    });
+}
+
+// fonctio si quelqu'un clique sur le bouton de fin de partie, celle-ci est arrêté
+function endGame(){
+    $.ajax({
+        method: "POST",
+        data : {"url" : url_partie},
+        url: "../PHP/endGame.php",
+    }).done(function(e){
+        console.log("success");
+        pseudo = "";    
+        url_partie = "";
+        ingame = false;
+        testInterval = setInterval(gameLaunchedForPlayer,500);
+        $("#waiting-room").css('display', 'block');
+        $("#game-frame").css('display', 'none');
+    }).fail(function(e){
+        console.log("fail");
+    });
+}
+
+function gameFinished(){
+    // si ingame toujours a vrai alors appel ajax
+    if(ingame){
+        $.ajax({
+            method: "GET",
+            url: url_partie,
+        }).done(function(e){
+        }).fail(function(e){
+            // si fail alors fichier plus existant du coup on arrête la partie
+            pseudo = "";    
+            url_partie = "";
+            ingame = false;
+            testInterval = setInterval(gameLaunchedForPlayer,500);
+            $("#waiting-room").css('display', 'block');
+            $("#game-frame").css('display', 'none');
+        });
+    }
 }

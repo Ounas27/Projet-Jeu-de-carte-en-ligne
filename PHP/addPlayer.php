@@ -1,4 +1,7 @@
 <?php
+    /**
+     * FICHIER PERMETTANT D'AJOUTER UN JOUEUR A LA LISTE D'ATTENTES
+     */
     date_default_timezone_set('Europe/Paris');
     session_start();
     $pseudo = $_POST['pseudo'];
@@ -13,18 +16,21 @@
     $players = json_decode($jsonString, true); 
     // ICI ON MODIFIE LE CONTENU COMME UN TABLEAU ASSOCIATIF
     if(!is_null($players)){
+        // on crée un joueur
         $player = array(
             'username' => $pseudo,
             'level' => $niveau,
             'time' => $time,
-            'connected' => "",
-            'checkbox'=> "false"
+            'connectedJSON' => "",
+            'connectedPHP' => ""
         );
         $_SESSION[$pseudo] = $pseudo;
+        // et on l'ajoute à notre liste de joueurs
         array_push($players, $player);
         $newJsonString = json_encode($players, JSON_PRETTY_PRINT);
         ftruncate($f, 0);
         fseek($f,0);
+        // on ré écrit le fichier mainJoueurs.json
         fwrite($f, $newJsonString);
         flock($f, LOCK_UN);
         fclose($f);

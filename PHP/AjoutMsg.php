@@ -1,18 +1,33 @@
 <?php
-    echo"<style>
-        font-size: 45px;
-    </style>";
-    $jsonString = file_get_contents('../JSON/messageChat.json');
-    $data = json_decode($jsonString, true);
-
+    /**
+     * FICHIER PERMETTANT D'AJOUTER UN MESSAGE 
+     */
+    // ON récupère les infomations envoyées lors de l'appel ajax
+    $url = $_POST['url'];
+    $pseudo = $_POST['pseudo'];
     $messageAEnvoyer = $_POST["Message"];
-    $VAR1 = array(
-        'Joueur' => "J3",
-        'Message' => $messageAEnvoyer
+    $estCarte = $_POST['estCarte'];
+    $f = fopen($url, 'r+');
+    if (!flock($f, LOCK_EX))
+        http_response_code(409); // conflict
+    $jsonString = fread($f, filesize($url));
+    $data = json_decode($jsonString, true); 
+
+    // ON crée la liste contenant le message d'un joueur
+    $varMessage = array(
+        'nomJoueur' => $pseudo,
+        'message' => $messageAEnvoyer,
+        'estCarte' => $estCarte
     );
     
-    array_push($data, $VAR1);
+    // et on l'ajoute à la liste de tous les messages de la partie
+    array_push($data["messageJeu"], $varMessage);
     
     $newJsonString = json_encode($data, JSON_PRETTY_PRINT);
-    file_put_contents('../JSON/messageChat.json', $newJsonString);
+    ftruncate($f, 0);
+    fseek($f,0);
+    fwrite($f, $newJsonString);
+    flock($f, LOCK_UN);
+    fclose($f);
+    
 ?>

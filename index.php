@@ -10,7 +10,6 @@ setcookie("cookie_session", "cookie", time()+3600);
   <meta charset="utf-8">
   <title>Main</title>
   <link rel="stylesheet" href="../CSS/index.css">
-  <link rel="stylesheet" href="../CSS/style.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="../js/main.js"></script>
 </head>
@@ -53,13 +52,9 @@ setcookie("cookie_session", "cookie", time()+3600);
   </section>
   </div>
   <div id="game-frame">
+    <input id="endGame" type="submit" onclick="endGame()" value="Fin de partie">
   <?php
             echo"<div id=setJeux1>
-                    <div><img id=carte1 draggable='true' ondragstart = 'drag(event)' src=''></div>
-                    <div><img id=carte2 draggable='true' ondragstart = 'drag(event)'  src=''></div>
-                    <div><img id=carte3 draggable='true' ondragstart = 'drag(event)'  src=''></div>
-                    <div><img id=carte4 draggable='true' ondragstart = 'drag(event)' src=''></div>
-                    <div><img id=carte5 draggable='true' ondragstart = 'drag(event)' src=''></div>
                 </div>
 
                 <div id=setJeux2>
@@ -90,11 +85,13 @@ setcookie("cookie_session", "cookie", time()+3600);
             echo"<div id=tapisJeux ondrop='drop(event)' ondragover='allow_drop(event)'>
                 </div>";
 
-            echo"<div id=chat>
+            echo"<div id=zoneDepotCartes ondrop='drop(event)' ondragover='allow_drop(event)'>
+                </div>
+                <div id=chat>
+                      <div id=messageCourant>
+                      </div>   
                     <input type='text' id='messageAEnvoyer' required>
                     <button onclick='envoyerMessage()'>Envoyer</button>
-                    <div id=messageCourant>
-                    </div>
                 </div>";
         ?> 
   </div>

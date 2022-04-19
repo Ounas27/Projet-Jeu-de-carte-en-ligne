@@ -1,11 +1,10 @@
 <?php
     /**
-     * FICHIER PERMETTANT DE SUPPRIMER LES JOUEURS INACTIFS
+     * FICHIER PERMETTANT DE SUPPRIMER UN JOUEUR SPECIFIQUE
      */
-    // définition du fuseau horaire
-    date_default_timezone_set('Europe/Paris');
-
    $filename="../JSON/mainJoueurs.json";
+   // on récupère le pseudo envoyé par appel ajax
+   $pseudo = $_POST['pseudo'];
     $f = fopen($filename, 'r+');
     if (!flock($f, LOCK_EX))
         http_response_code(409); // conflict
@@ -14,15 +13,10 @@
     
     if(!is_null($players)){
         foreach($players as $player => $entry){
-            $timeplayer = $entry['time'];
-            $currentTime = date('Y-m-d H:i:s');
-            // différence entre l'heure actuelle et l'heure du joueur
-            $diff = abs(strtotime($currentTime) - strtotime($timeplayer));
-            // si différence > 60sec alors il est supprimé de la liste d'attente
-            if($diff > 60){
-                echo $players[$player]['username'];
+            // Si bon pseudo et que pseudo existant dans file d'attente
+            // alors le joueur est supprimé
+            if($entry['username'] == $pseudo)
                 unset($players[$player]);
-            }
         }
         $newJsonString = json_encode($players, JSON_PRETTY_PRINT);
         ftruncate($f, 0);
