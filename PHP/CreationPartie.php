@@ -56,8 +56,8 @@
                     
                     if(strlen($players[$player]["connectedJSON"]) == 0){
                         //ici on modifie les champs liées à la connection de partie d'un joueur
+                        //
                         $players[$player]["connectedJSON"] = "../JSON/partie".$random.".json";
-                        $players[$player]["connectedPHP"] = "../PHP/partie".$random.".php";
                         array_push($joueurs, $joueur);   
                     }
                 }

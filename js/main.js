@@ -4,7 +4,6 @@ var url_partie = "";
 var ingame = false;
 var testInterval;
 let players = Array();
-let compteurJoueurs = 0;
 playersRefresh(500);
 
 
@@ -17,8 +16,7 @@ function playersRefresh(timeoutPeriod){
     setInterval(majTapis, timeoutPeriod);
     setInterval(majChat, timeoutPeriod);
     setInterval(allowedtoDrop, timeoutPeriod);
-    setInterval(roundFinished, timeoutPeriod);
-    //setInterval(gameFinished, timeoutPeriod);
+    setInterval(gameFinished, timeoutPeriod);
     
 }
 
@@ -46,6 +44,7 @@ function drop(ev){
     let carteTapis = data.split("_").map(Number);
     // appel ajax pour changer l'etat de la carte deposee sur le tapis
     if(ev.target.id == "tapisJeux"){
+        //console.log(" LA CARTE TIREE A POUR COULEUR " + carteTapis[0] + " ET POUR VALEUR :" carteTapis[1]);
         $.ajax({
                 method: 'POST',
                 data : {"url" : url_partie,"pseudo" : pseudo , "couleur" : carteTapis[0], "valeur" : carteTapis[1]},
@@ -56,15 +55,20 @@ function drop(ev){
                     method: 'POST',
                     data: {"url" : url_partie, "pseudo" : pseudo ,"couleur" : carteTapis[0], "valeur" : carteTapis[1]},
                     url : "../PHP/poserTapis.php",
-                }).done(function(data){             
+                }).done(function(data){  
+                    console.log(data);           
                     $.ajax({
                         method: 'POST',
                         data : {"url" : url_partie},
                         url : '../PHP/dernierDepot.php',
                     }).done(function(data){
+                        affichageCarte();
+                        console.log(data);
                     }).fail(function(data){
+                        console.log(data);
                     });
                 }).fail(function(data){
+                    console.log(data); 
                 });
                 // fin appel ajax gestionRegles
             }).fail(function(data){
@@ -103,11 +107,14 @@ function majTapis(){
         }).done(function(e) {
         $("#tapisJeux").empty();
         if(e != null){
+            // on recupere la taille de la pile sur le tapis
             var longueurTapisCarte = e['pileTapis'].length;
-            if(longueurTapisCarte>4){
+            if(longueurTapisCarte > 4){
+                // si plus grand que 4, on veut juste afficher les 4 dernieres cartes
                 for(let i = longueurTapisCarte-4; i < longueurTapisCarte + 1; i++){
+                    console.log("rentré dans la boucle");
                     var couleurCarte = e["pileTapis"][i]["Couleur"];
-                    var valeurCarte = e["pileTapis"][i]["Valeur"];//go teste
+                    var valeurCarte = e["pileTapis"][i]["Valeur"];
                     var maDiv = document.createElement("div");
                     var monimg = document.createElement("img");
                     monimg.setAttribute("id",couleurCarte+"_"+valeurCarte);
@@ -116,9 +123,11 @@ function majTapis(){
                     monimg.setAttribute("src","../ImagesCartes/"+couleurCarte+"_"+valeurCarte+".png");
                     maDiv.appendChild(monimg);
                     document.getElementById("tapisJeux").appendChild(maDiv);
+                    console.log(monimg);
                 }
             }
             else{
+                // sinon on affiche toutes les cartes donc longueurTapis < 4
                 for(var carteTapis in e['pileTapis']){ 
                     var couleurCarte = e["pileTapis"][carteTapis]["Couleur"];
                     var valeurCarte = e["pileTapis"][carteTapis]["Valeur"];
@@ -132,6 +141,7 @@ function majTapis(){
                     document.getElementById("tapisJeux").appendChild(maDiv);
                 }
             }
+            // appel ajax pour mettre à jour le setJeux du joueur
             $.ajax({
                 method : 'GET',
                 url : url_partie
@@ -238,6 +248,7 @@ function actualisePlayerCurrentTime(){
 
 function updatePlayers(){
     let disabled = "";
+    let compteurJoueurs = 0;
     $(document).ready(function(){
     //appel ajax pour mettre à jour le tableau contenant les joueurs inscrits
     $.ajax({
@@ -247,23 +258,28 @@ function updatePlayers(){
      }).done(function(e){
         if(e != null){
             for(let index_player in e){
+                // on incrémente le compteur pour les joueurs selectionnes
                 if(e[index_player]["check"] === "true")
                     compteurJoueurs += 1;
                 if(e[index_player]["connectedJSON"] === ""){
+                    // s'ils sont pas dans une partie on affiche au tableau
                     let ligne = $("#listing-players #tr" + index_player);                
                     if(ligne.length == 0){
                         players[index_player] = e[index_player];
                         $("#listing-players").append("<tr id='tr"+index_player+"'><td class='1'>"+ players[index_player]['username']+"</td><td class='2'>"+ players[index_player]['level'] + "</td><td class='3'><input id='checkbox"+ index_player +"'type='checkbox' value='"+ players[index_player]['username'] +"'</td></tr>");
                     }
                     else{
+                        // sinon le premier de la liste est celui qui selectionne les joueurs pour la partie
                         if(pseudo === e[0]["username"]){
                             document.getElementById("checkbox"+index_player).disabled = false;
+                            // une fois 4 joueurs, impossible d'en selectionner dautres
                             if(compteurJoueurs == 4){
                                 if(e[index_player]["check"] === "false")
                                     document.getElementById("checkbox"+index_player).disabled = true;
                             }
                             else 
                                 document.getElementById("checkbox"+index_player).disabled = false;
+                            // on regarde la valeur du checkbox et on met à jour dans le fichier JSON
                             if(document.getElementById("checkbox"+index_player).checked){
                                 $.ajax({
                                     type: 'POST',
@@ -286,6 +302,7 @@ function updatePlayers(){
                             }
                         }
                         else {
+                            // on met à jour l'affichage des checkbox
                             document.getElementById("checkbox"+index_player).disabled = true;
                             if(e[index_player]['check'] === "true")
                                 document.getElementById("checkbox"+index_player).checked = true;
@@ -300,13 +317,15 @@ function updatePlayers(){
 
             } 
         }
-        // A remettre pour avoir le bouton enabled seulement si 4 joueurs logged
-        /*if(players.length >= 4 && compteurJoueurs == 4){
-            disabled = "";
+        // on rend le bouton de lancer la partie visible
+        if(players.length >= 4){
+            if(compteurJoueurs == 4)
+                disabled = "";
         }
         else {
             disabled = "disabled";
-        }*/
+        }
+        // on affiche le bouton si seulement sa ligne pas créée
         if($("#tab-players #zone-btn").length == 0)
             $("#tab-players").append("<div id='zone-btn'><tr id='btn-start-game'><td><input type='submit' id='start-game' name='start-game' value='Commencer la partie' onclick='launchGame()'" + disabled +"></td></tr></div>");
         else{
@@ -371,33 +390,31 @@ function removePlayers(){
  * PARTIE CONCERNANT LE LANCEMENT DE PARTIE
  */
 function launchGame(){
-    // en cas de clic sur le bouton
-    //appel ajax pour créer une partie pour les 4 joueurs
-    // à mettre pour la version finale
-    /*if(compteurJoueurs == 4){
-        $.ajax({
-            type: 'POST',
-            datatype: "json",
-            url: '../PHP/CreationPartie.php'
-        }).done(function(e){
-            console.log(e);
-            $("#waiting-room").css('display', 'none');
-            $("#game-frame").css('display', 'block');
-            affichageCarte();
-        }).fail(function(e){
-        });
-    }
-    else alert("Vous n'avez pas sélectionné 4 joueurs pour la partie");*/
+    // en cas de clic sur le bouton la partie est démarrée
+    let compteur = 0;
     $.ajax({
-        type: 'POST',
-        datatype: "json",
-        url: '../PHP/CreationPartie.php'
+        method : 'GET',
+        url : '../JSON/mainJoueurs.json' 
     }).done(function(e){
-        console.log(e);
-        $("#waiting-room").css('display', 'none');
-        $("#game-frame").css('display', 'block');
-        affichageCarte();
-    }).fail(function(e){
+        for(let index in e){
+            if(e[index]['check'] === "true")
+                compteur += 1;
+        }
+        // seulement si les 4 joueurs sont selectionnes
+        if(compteur == 4){
+            $.ajax({
+                type: 'POST',
+                datatype: "json",
+                url: '../PHP/CreationPartie.php'
+            }).done(function(e){
+                console.log(e);
+                $("#waiting-room").css('display', 'none');
+                $("#game-frame").css('display', 'block');
+                affichageCarte();
+            }).fail(function(e){
+            });
+        }
+        else alert("Vous n'avez pas sélectionné 4 joueurs pour la partie");
     });
 }
 
@@ -431,7 +448,7 @@ function gameLaunchedForPlayer(){
         }
      }).fail(function(e){
      });
-}
+}//
 
 // fonction permettant d'afficher les cartes générées pour le joueur
 function affichageCarte(){
@@ -442,11 +459,12 @@ function affichageCarte(){
         }).done(function(e) {
             $("#setJeux1").empty();
             for(let i = 0; i < 4; i ++){
-                if(pseudo === e.joueurs[i].pseudo){
+                if(pseudo === e["joueurs"][i]['pseudo']){
+                    $("#numero-equipe").append("Equipe "+e["joueurs"][i]['equipe']);
                     for(let pas = 0; pas < 5; pas++){
-                        if(!(e.joueurs[i].cartes[pas].carteTapis)){
-                            var couleurCarte = e.joueurs[i].cartes[pas].Couleur;
-                            var valeurCarte = e.joueurs[i].cartes[pas].Valeur;
+                        if(!(e['joueurs'][i]['cartes'][pas]['carteTapis'])){
+                            var couleurCarte = e['joueurs'][i]['cartes'][pas]['Couleur'];
+                            var valeurCarte = e['joueurs'][i]['cartes'][pas]['Valeur'];
                             var maDiv = document.createElement("div");
                             var monimg = document.createElement("img");
                             monimg.setAttribute("id",couleurCarte+"_"+valeurCarte);
@@ -464,61 +482,54 @@ function affichageCarte(){
     });
 }
 
-// fonctio si quelqu'un clique sur le bouton de fin de partie, celle-ci est arrêté
+// fonction si quelqu'un clique sur le bouton de fin de partie, celle-ci est arrêté
 function endGame(){
     $.ajax({
         method: "POST",
         data : {"url" : url_partie},
         url: "../PHP/endGame.php",
     }).done(function(e){
-        /*console.log("success");
-        pseudo = "";    
-        url_partie = "";
-        ingame = false;
-        //playersRefresh(500);
-        $("#waiting-room").css('display', 'block');
-        $("#game-frame").css('display', 'none');*/
         location.reload();
     }).fail(function(e){
     });
 }
 
+// fonction qui détermine si la partie est terminée
 function gameFinished(){
-    // si ingame toujours a vrai alors appel ajax
     if(ingame){
         $.ajax({
-            method: "GET",
-            url: url_partie,
-        }).done(function(e){
+            method : "POST",
+            data : {"url" : url_partie},
+            url: '../PHP/gameState.php',
         }).fail(function(e){
-            // si fail alors fichier plus existant du coup on arrête la partie
-            /*pseudo = "";    
-            url_partie = "";
-            ingame = false;
-            players = Array();
-            playersRefresh(500);
-            $("#waiting-room").css('display', 'block');
-            $("#game-frame").css('display', 'none');*/
-            location.reload();
-        });
-    }
-}
+        }).done(function(data){
+            // on vérfie que toutes les cartes ont été posées dans la tapis
+            if(data === "true"){
+                //appel ajax sur le json de la partie
+                $.ajax({
+                    method : "GET",
+                    url: url_partie,
+                }).fail(function(e){
+                }).done(function(data){
+                    var resultat = "";
+                    // on recupere les points par team
+                    var ptsEquipe1 = data['equipes'][0]['pointsTotal'];
+                    var ptsEquipe2 = data['equipes'][1]['pointsTotal'];
 
-function roundFinished(){
-    if(ingame){
-        $.ajax({
-            method: "POST",
-            data : {url : url_partie},
-            url: "../PHP/finManche.php",
-        }).done(function(e){
-            if(e === "true"){
-                affichageCarte();
-                majTapis();
+                    if(ptsEquipe1 > ptsEquipe2){
+                        resultat = "L'équipe 1 a gagné avec " + ptsEquipe1 + " points.";
+                    }
+
+                    else{
+                        resultat = "L'équipe 2 a gagné " + ptsEquipe2 + " points.";
+                    }
+                    // et on affiche les gagnants
+                    alert(resultat);
+                    endGame();
+                    location.reload();
+                    url_partie = "";
+                });
             }
-            else{
-                console.log("Partie pas terminée");
-            }
-        }).fail(function(e){
         });
-    }
+   }
 }

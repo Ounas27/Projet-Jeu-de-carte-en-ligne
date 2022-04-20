@@ -53,6 +53,7 @@ setcookie("cookie_session", "cookie", time()+3600);
   </div>
   <div id="game-frame">
     <input id="endGame" type="submit" onclick="endGame()" value="Fin de partie">
+    <p id="numero-equipe" style="margin-top: 10%;"></p>
   <?php
             echo"<div id=setJeux1>
                 </div>

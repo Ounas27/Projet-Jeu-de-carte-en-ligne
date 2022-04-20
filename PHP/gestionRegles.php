@@ -17,6 +17,7 @@
     $pointObtenu = 0;
     $atout = $data['couleurAtout'];
     // ordre : 1- carreau 2- coeur 3- pique 4- trefle
+    // attribution des points en fonction de l'atout
     if($atout == $couleur){
         if($valeur == 1) $pointObtenu = 11;
         if($valeur == 7) $pointObtenu = 0;
@@ -38,6 +39,7 @@
         if($valeur == 13) $pointObtenu = 4; 
     }
 
+    // ajout des points aux points de l'equipe quand une carte est deposee
     for($i = 0; $i < count($data["joueurs"]); $i++){
         if($data['joueurs'][$i]['pseudo'] == $pseudo){
             $num = $data["joueurs"][$i]["equipe"];

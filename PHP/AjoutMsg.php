@@ -13,7 +13,7 @@
     $jsonString = fread($f, filesize($url));
     $data = json_decode($jsonString, true); 
 
-    // ON crée la liste contenant le message d'un joueur
+    // On crée la liste contenant le message d'un joueur
     $varMessage = array(
         'nomJoueur' => $pseudo,
         'message' => $messageAEnvoyer,

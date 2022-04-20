@@ -1,4 +1,7 @@
 <?php
+/**
+ * fichier pour mettre à jour les joueurs selectionnes pour la partie
+ */
     $check = $_REQUEST['box_checked'];
     $pseudo = $_REQUEST['pseudo'];
     
