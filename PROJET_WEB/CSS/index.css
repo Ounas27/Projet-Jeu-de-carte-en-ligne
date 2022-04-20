@@ -1,0 +1,211 @@
+body{
+    width: 100%;
+    background-color: green;
+    color: white;
+}
+table {
+    width: 100%;
+}
+.left-area{
+    float: left;
+    width: 50%;
+}
+.right-area {
+    float: right;
+    width: 50%;
+}
+#tab-players {
+    padding-left : 5%;
+    padding-right : 5%;
+}
+table, th, tr, td {
+    border: 1px solid black;
+}
+
+#game-frame {
+    display: none;
+}
+
+/*
+    PARTIE POUR LE CSS DU JEU
+*/
+
+#endGame{
+    position: absolute;
+    margin: 0;
+    left: 0;
+    top: 0;
+}
+
+#setJeux1{
+    display: flex;
+    position:absolute;
+    left:0;
+    right:0;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 3px;
+    bottom:0;
+    justify-content: center;
+    align-items: center;
+}
+
+#setJeux2{
+    display: inline-block;
+    position:absolute;
+    margin: auto;
+    bottom:40%;
+    right:0;
+    justify-content: center;
+    align-items: center;
+}
+
+#setJeux3{
+    display: flex;
+    position:absolute;
+    top:0;
+    left:25%;
+    justify-content: center;
+    align-items: center; 
+}
+
+#setJeux4{
+    display: inline-block;
+    position:absolute;
+    margin: auto;
+    bottom:40%;
+    left:0;
+    justify-content: center;
+    align-items: center;
+}
+
+#setJeux1 div, #setJeux3 div{
+    width: 15vmin;
+    height: 20vmin;
+    margin-right:-10%;
+}
+
+#setJeux2 div,#setJeux4 div{
+    width: 15vmin;
+    height: 20vmin;
+    margin-bottom:-90%;
+}
+
+#setJeux1 div img, #setJeux2 div img, #setJeux3 div img, #setJeux4 div img{
+    width: 100%;
+    height: 100%;
+}
+
+#tapisJeux{
+    position: absolute;
+    display: flex;
+    width: 30%;
+    height: 25%;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin:auto;
+    background-color: #aa2509;
+    justify-content: center;
+    align-items: center; 
+}
+
+#tapisJeux div{
+    width: 15vmin;
+    height: 20vmin;
+}
+
+#tapisJeux div:not(:last-child){
+    margin-right:-9%;
+}
+
+#tapisJeux div img{
+    width: 100%;
+    height: 100%;
+}
+
+#chat{
+    position: absolute;
+    margin-bottom: 22px;
+    margin-right:0;
+    height: 20%;
+    width: 20%;
+    bottom: 0;
+    left:0;
+}
+
+#chat input{
+    width:81%;
+}
+
+#messageCourant{
+    background-color: #C5C1B7;
+    font-size: 20px;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+#messageCourant div{
+    width: 15vmin;
+    height: 20vmin;
+}
+
+#messageCourant div:not(:last-child){
+    margin-right:-9%;
+}
+
+#messageCourant div img{
+    width: 100%;
+    height: 100%;
+}
+
+
+#zoneDepotCartes{
+    position: absolute;
+    display: flex;
+    margin-bottom: 22px;
+    left:20%;
+    width: 11%;
+    height: 20%;
+    bottom: 0;
+    margin-left:0;
+    background-color: #92835f;
+    justify-content: center;
+    align-items: center; 
+}
+
+#zoneDepotCartes div{
+    width: 6vmin;
+    height: 10vmin;
+}
+
+#zoneDepotCartes div:not(:last-child){
+    margin-right:-9%;
+}
+
+#zoneDepotCartes div img{
+    width: 100%;
+    height: 100%;
+}
+
+
+table {
+    width: 100%;
+}
+.left-area{
+    float: left;
+    width: 50%;
+}
+.right-area {
+    float: right;
+    width: 50%;
+}
+#tab-players {
+    padding-left : 5%;
+    padding-right : 5%;
+}
+table, th, tr, td {
+    border: 1px solid black;
+}
