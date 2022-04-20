@@ -12,7 +12,11 @@
     else 
         $data["joueurCourant"] = $indexJoueur + 1;
     
-    
+    if(count($data["joueurs"][$data["joueurCourant"]]["cartes"]) != 5 && count($data["deck"]) > 0){
+        array_push($data["joueurs"][$data["joueurCourant"]]["cartes"], $data["deck"][0]);
+        array_splice($data["deck"][0], 0, 1);
+    }
+    echo $data["joueurCourant"];
     $newJsonString = json_encode($data, JSON_PRETTY_PRINT);
     ftruncate($f, 0);
     fseek($f,0);

@@ -12,7 +12,7 @@
     if(!is_null($players)){
         foreach($players as $player => $entry){
             if ($entry['username'] == $pseudo){
-                $players[$player]['checkbox'] = $check;
+                $players[$player]['check'] = $check;
             }
         }
         $newJsonString = json_encode($players, JSON_PRETTY_PRINT);

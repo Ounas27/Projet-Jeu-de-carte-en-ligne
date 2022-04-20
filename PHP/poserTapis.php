@@ -20,20 +20,23 @@
                 if($data["joueurs"][$i]["cartes"][$j]["Valeur"]==$Valeur && $data["joueurs"][$i]["cartes"][$j]["Couleur"]==$Couleur){
                     // dès qu'on a la bonne carte du joueur, son champ carteTapis passe à true
                     $data["joueurs"][$i]["cartes"][$j]["carteTapis"] = true;
-                    
-                    //A FAIRE : debug tout ca + ajouter un systeme de 8 tours max avec affichage du gagnant + tirage dans le deck
-                    // tqt jle ferai pour 10h grand max dacc
-                        /*$carteARecuperer = array(
-                            'nomJoueur' => $data["joueurs"][$i]["pseudo"],
-                            'Valeur' => $data["joueurs"][$i]["cartes"][$j]["Valeur"],
-                            'Couleur' => $data["joueurs"][$i]["cartes"][$j]["Couleur"]
-                        );*/
-                         // yep bonne nuit bg a demain je vais déposer sur git avant on sait jamais ca marche
+                    $carteARecuperer = array(
+                        'nomJoueur' => $data["joueurs"][$i]["pseudo"],
+                        'Valeur' => $data["joueurs"][$i]["cartes"][$j]["Valeur"],
+                        'Couleur' => $data["joueurs"][$i]["cartes"][$j]["Couleur"]
+                    );
+                    unset($data["joueurs"][$i]["cartes"][$j]);
+                    $nvSet = array_values($data["joueurs"][$i]["cartes"]);
+                    unset($data["joueurs"][$i]["cartes"]);
+                    $data["joueurs"][$i]["cartes"] = array();
+                    $data["joueurs"][$i]["cartes"] = array_merge($data["joueurs"][$i]["cartes"], $nvSet);
                 }
             }
         }
     }
-    array_push($data['pileTapis'], $carteARecuperer);
+    if(!is_null($carteARecuperer))
+        array_push($data['pileTapis'], $carteARecuperer);
+    else echo "VIDE TA CARTE";
     $newJsonString = json_encode($data, JSON_PRETTY_PRINT);
     ftruncate($f, 0);
     fseek($f,0);

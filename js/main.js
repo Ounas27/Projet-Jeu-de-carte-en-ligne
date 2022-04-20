@@ -4,6 +4,7 @@ var url_partie = "";
 var ingame = false;
 var testInterval;
 let players = Array();
+let compteurJoueurs = 0;
 playersRefresh(500);
 
 
@@ -16,6 +17,7 @@ function playersRefresh(timeoutPeriod){
     setInterval(majTapis, timeoutPeriod);
     setInterval(majChat, timeoutPeriod);
     setInterval(allowedtoDrop, timeoutPeriod);
+    setInterval(roundFinished, timeoutPeriod);
     //setInterval(gameFinished, timeoutPeriod);
     
 }
@@ -44,17 +46,17 @@ function drop(ev){
     let carteTapis = data.split("_").map(Number);
     // appel ajax pour changer l'etat de la carte deposee sur le tapis
     if(ev.target.id == "tapisJeux"){
-        //ICI
         $.ajax({
                 method: 'POST',
                 data : {"url" : url_partie,"pseudo" : pseudo , "couleur" : carteTapis[0], "valeur" : carteTapis[1]},
                 url : '../PHP/gestionRegles.php',
             }).done(function(data){
+                console.log(data);
                 $.ajax({
                     method: 'POST',
                     data: {"url" : url_partie, "pseudo" : pseudo ,"couleur" : carteTapis[0], "valeur" : carteTapis[1]},
                     url : "../PHP/poserTapis.php",
-                }).done(function(data){              
+                }).done(function(data){             
                     $.ajax({
                         method: 'POST',
                         data : {"url" : url_partie},
@@ -102,8 +104,6 @@ function majTapis(){
         $("#tapisJeux").empty();
         if(e != null){
             var longueurTapisCarte = e['pileTapis'].length;
-            // c
-            console.log(["pileTapis"]);
             if(longueurTapisCarte>4){
                 for(let i = longueurTapisCarte-4; i < longueurTapisCarte + 1; i++){
                     var couleurCarte = e["pileTapis"][i]["Couleur"];
@@ -132,6 +132,17 @@ function majTapis(){
                     document.getElementById("tapisJeux").appendChild(maDiv);
                 }
             }
+            $.ajax({
+                method : 'GET',
+                url : url_partie
+            }).done(function(e){
+                if(e["joueurs"][e["joueurCourant"]]["pseudo"] === pseudo){
+                    let nb_cartes = e["joueurs"][e["joueurCourant"]]["cartes"].length;
+                    if(nb_cartes != 5)
+                        affichageCarte();
+                }
+            }).fail(function(e){
+            });
         }
         }).fail(function(e) {
     });
@@ -236,17 +247,51 @@ function updatePlayers(){
      }).done(function(e){
         if(e != null){
             for(let index_player in e){
+                if(e[index_player]["check"] === "true")
+                    compteurJoueurs += 1;
                 if(e[index_player]["connectedJSON"] === ""){
                     let ligne = $("#listing-players #tr" + index_player);                
                     if(ligne.length == 0){
                         players[index_player] = e[index_player];
-                        $("#listing-players").append("<tr id='tr"+index_player+"'><td class='1'>"+ players[index_player]['username']+"</td><td class='2'>"+ players[index_player]['level'] + "</td><td class='3'><input id='checkbox"+ index_player +"'type='radio' value='"+ players[index_player]['username'] +"'</td></tr>");
+                        $("#listing-players").append("<tr id='tr"+index_player+"'><td class='1'>"+ players[index_player]['username']+"</td><td class='2'>"+ players[index_player]['level'] + "</td><td class='3'><input id='checkbox"+ index_player +"'type='checkbox' value='"+ players[index_player]['username'] +"'</td></tr>");
                     }
                     else{
-                        if(e[index_player]['checkbox'] === "true")
-                            document.getElementById("checkbox"+index_player).checked = true;
-                        else
-                            document.getElementById("checkbox"+index_player).checked = false;
+                        if(pseudo === e[0]["username"]){
+                            document.getElementById("checkbox"+index_player).disabled = false;
+                            if(compteurJoueurs == 4){
+                                if(e[index_player]["check"] === "false")
+                                    document.getElementById("checkbox"+index_player).disabled = true;
+                            }
+                            else 
+                                document.getElementById("checkbox"+index_player).disabled = false;
+                            if(document.getElementById("checkbox"+index_player).checked){
+                                $.ajax({
+                                    type: 'POST',
+                                    data:  { "box_checked": 'true', "pseudo" : e[index_player]['username']},        //La méthode cible (POST ou GET)
+                                    url : '../PHP/playerSelected.php' //Script Cible
+                                }).done(function(e){
+                                        console.log(e);
+                                }).fail(function(e){
+                                }); 
+                            }   
+                            else {
+                                $.ajax({
+                                    type: 'POST',
+                                    data:  { "box_checked": 'false', "pseudo" : e[index_player]['username']},        //La méthode cible (POST ou GET)
+                                    url : '../PHP/playerSelected.php' //Script Cible
+                                }).done(function(e){
+                                        console.log(e);
+                                }).fail(function(e){
+                                }); 
+                            }
+                        }
+                        else {
+                            document.getElementById("checkbox"+index_player).disabled = true;
+                            if(e[index_player]['check'] === "true")
+                                document.getElementById("checkbox"+index_player).checked = true;
+                            else
+                                document.getElementById("checkbox"+index_player).checked = false;
+                        }
                     }
                 }
                 else{
@@ -256,7 +301,7 @@ function updatePlayers(){
             } 
         }
         // A remettre pour avoir le bouton enabled seulement si 4 joueurs logged
-        /*if(players.length >= 4){
+        /*if(players.length >= 4 && compteurJoueurs == 4){
             disabled = "";
         }
         else {
@@ -319,7 +364,6 @@ function removePlayers(){
             }
          }
      }).fail(function(e){
-         console.log("ERROR");
      });
 }
 
@@ -329,16 +373,31 @@ function removePlayers(){
 function launchGame(){
     // en cas de clic sur le bouton
     //appel ajax pour créer une partie pour les 4 joueurs
+    // à mettre pour la version finale
+    /*if(compteurJoueurs == 4){
+        $.ajax({
+            type: 'POST',
+            datatype: "json",
+            url: '../PHP/CreationPartie.php'
+        }).done(function(e){
+            console.log(e);
+            $("#waiting-room").css('display', 'none');
+            $("#game-frame").css('display', 'block');
+            affichageCarte();
+        }).fail(function(e){
+        });
+    }
+    else alert("Vous n'avez pas sélectionné 4 joueurs pour la partie");*/
     $.ajax({
         type: 'POST',
         datatype: "json",
         url: '../PHP/CreationPartie.php'
     }).done(function(e){
+        console.log(e);
         $("#waiting-room").css('display', 'none');
         $("#game-frame").css('display', 'block');
-        affichageCarte(); //comme ca ?
+        affichageCarte();
     }).fail(function(e){
-        console.log('fail');
     });
 }
 
@@ -371,7 +430,6 @@ function gameLaunchedForPlayer(){
             }
         }
      }).fail(function(e){
-        console.log("error");
      });
 }
 
@@ -403,7 +461,6 @@ function affichageCarte(){
             }
             
         }).fail(function(e) {
-            console.log('fail');
     });
 }
 
@@ -414,15 +471,15 @@ function endGame(){
         data : {"url" : url_partie},
         url: "../PHP/endGame.php",
     }).done(function(e){
-        console.log("success");
+        /*console.log("success");
         pseudo = "";    
         url_partie = "";
         ingame = false;
-        testInterval = setInterval(gameLaunchedForPlayer,500);
+        //playersRefresh(500);
         $("#waiting-room").css('display', 'block');
-        $("#game-frame").css('display', 'none');
+        $("#game-frame").css('display', 'none');*/
+        location.reload();
     }).fail(function(e){
-        console.log("fail");
     });
 }
 
@@ -435,13 +492,33 @@ function gameFinished(){
         }).done(function(e){
         }).fail(function(e){
             // si fail alors fichier plus existant du coup on arrête la partie
-            pseudo = "";    
+            /*pseudo = "";    
             url_partie = "";
             ingame = false;
             players = Array();
-            testInterval = setInterval(gameLaunchedForPlayer,500);
+            playersRefresh(500);
             $("#waiting-room").css('display', 'block');
-            $("#game-frame").css('display', 'none');
+            $("#game-frame").css('display', 'none');*/
+            location.reload();
+        });
+    }
+}
+
+function roundFinished(){
+    if(ingame){
+        $.ajax({
+            method: "POST",
+            data : {url : url_partie},
+            url: "../PHP/finManche.php",
+        }).done(function(e){
+            if(e === "true"){
+                affichageCarte();
+                majTapis();
+            }
+            else{
+                console.log("Partie pas terminée");
+            }
+        }).fail(function(e){
         });
     }
 }

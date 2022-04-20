@@ -22,7 +22,7 @@
             'level' => $niveau,
             'time' => $time,
             'connectedJSON' => "",
-            'connectedPHP' => ""
+            "check" => ""
         );
         $_SESSION[$pseudo] = $pseudo;
         // et on l'ajoute à notre liste de joueurs

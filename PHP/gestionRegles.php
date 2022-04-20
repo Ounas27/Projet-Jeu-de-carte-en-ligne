@@ -37,14 +37,14 @@
         if($valeur == 12) $pointObtenu = 3;
         if($valeur == 13) $pointObtenu = 4; 
     }
-    //merde on a oublié d'ajouter le fait de pouvoir piocher dans le deck aussi(faudra le faire demain au pire en vite fais)
-    //on test
-    foreach($data['joueurs'] as $index){
-        if($data['joueurs'][$index]['pseudo'] == $pseudo){
-            $num = $data['joueurs'][$index]['equipe'];
-            $data['equipes'][$num]["pointsTotal"] += $pointObtenu;
+
+    for($i = 0; $i < count($data["joueurs"]); $i++){
+        if($data['joueurs'][$i]['pseudo'] == $pseudo){
+            $num = $data["joueurs"][$i]["equipe"];
+            $data["equipes"][$num]["pointsTotal"] = $data["equipes"][$num]["pointsTotal"] + $pointObtenu;
         }
     }
+    
     $newJsonString = json_encode($data, JSON_PRETTY_PRINT);
     ftruncate($f, 0);
     fseek($f,0);
