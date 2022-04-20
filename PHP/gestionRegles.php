@@ -1,5 +1,54 @@
 <?php
+    /**
+     * Fichier appelé pour vérifier les règles du jeu
+     */
+    // on est proche du but
+    $pseudo = $_POST['pseudo'];
+    $url = $_POST['url'];
+    $couleur = $_POST['couleur'];
+    $valeur = $_POST['valeur']; 
+    $f = fopen($url, 'r+');
+    if (!flock($f, LOCK_EX))
+        http_response_code(409); // conflict
+    $jsonString = fread($f, filesize($url));
+    $data = json_decode($jsonString, true);
 
-$dernierJoueur = $_POST['dernier_joueur'];
-$derniereCarte = $_POST['derniere_carte'];
+    // inialisation a 0 par defaut
+    $pointObtenu = 0;
+    $atout = $data['couleurAtout'];
+    // ordre : 1- carreau 2- coeur 3- pique 4- trefle
+    if($atout == $couleur){
+        if($valeur == 1) $pointObtenu = 11;
+        if($valeur == 7) $pointObtenu = 0;
+        if($valeur == 8) $pointObtenu = 0;
+        if($valeur == 9) $pointObtenu = 14;
+        if($valeur == 10) $pointObtenu = 10;
+        if($valeur == 11) $pointObtenu = 20;
+        if($valeur == 12) $pointObtenu = 3;
+        if($valeur == 13) $pointObtenu = 4; 
+    }
+    else {  
+        if($valeur == 1) $pointObtenu = 11;
+        if($valeur == 7) $pointObtenu = 0;
+        if($valeur == 8) $pointObtenu = 0;
+        if($valeur == 9) $pointObtenu = 0;
+        if($valeur == 10) $pointObtenu = 10;
+        if($valeur == 11) $pointObtenu = 2;
+        if($valeur == 12) $pointObtenu = 3;
+        if($valeur == 13) $pointObtenu = 4; 
+    }
+    //merde on a oublié d'ajouter le fait de pouvoir piocher dans le deck aussi(faudra le faire demain au pire en vite fais)
+    //on test
+    foreach($data['joueurs'] as $index){
+        if($data['joueurs'][$index]['pseudo'] == $pseudo){
+            $num = $data['joueurs'][$index]['equipe'];
+            $data['equipes'][$num]["pointsTotal"] += $pointObtenu;
+        }
+    }
+    $newJsonString = json_encode($data, JSON_PRETTY_PRINT);
+    ftruncate($f, 0);
+    fseek($f,0);
+    fwrite($f, $newJsonString);
+    flock($f, LOCK_UN);
+    fclose($f);
 ?>

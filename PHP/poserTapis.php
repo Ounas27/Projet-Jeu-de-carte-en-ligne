@@ -20,11 +20,15 @@
                 if($data["joueurs"][$i]["cartes"][$j]["Valeur"]==$Valeur && $data["joueurs"][$i]["cartes"][$j]["Couleur"]==$Couleur){
                     // dès qu'on a la bonne carte du joueur, son champ carteTapis passe à true
                     $data["joueurs"][$i]["cartes"][$j]["carteTapis"] = true;
-                    $carteARecuperer = array(
-                        'nomJoueur' => $data["joueurs"][$i]["pseudo"],
-                        'Valeur' => $data["joueurs"][$i]["cartes"][$j]["Valeur"],
-                        'Couleur' => $data["joueurs"][$i]["cartes"][$j]["Couleur"]
-                    );
+                    
+                    //A FAIRE : debug tout ca + ajouter un systeme de 8 tours max avec affichage du gagnant + tirage dans le deck
+                    // tqt jle ferai pour 10h grand max dacc
+                        /*$carteARecuperer = array(
+                            'nomJoueur' => $data["joueurs"][$i]["pseudo"],
+                            'Valeur' => $data["joueurs"][$i]["cartes"][$j]["Valeur"],
+                            'Couleur' => $data["joueurs"][$i]["cartes"][$j]["Couleur"]
+                        );*/
+                         // yep bonne nuit bg a demain je vais déposer sur git avant on sait jamais ca marche
                 }
             }
         }

@@ -16,7 +16,12 @@
         // genre son arborescenc    
         $partie = array(
             //joueur qui doit jouer
+            "couleurAtout" => "",
+            "cartePlusHaute" => "",
+            // atout lors d'un pli
             "joueurCourant"=> "",
+            // equipes de 2
+            "equipes" => array(),
             //pile du tapis de jeu
             "pileTapis" => array(),
             // les joueurs et leurs cartes
@@ -63,7 +68,7 @@
         // Définition des 4 figures
         for($i=1; $i<5; $i++){
             // Définition des 13 cartes possible par figure
-            for($j=1; $j<14; $j++){
+            for($j=7; $j<14; $j++){
                 //Pour chaque carte, on crée ses champs
                 $carte = array(
                     'Valeur' => $j,
@@ -77,7 +82,8 @@
         shuffle($cartes);
         
         // On ajoute la premiere carte du deck au tapis
-        array_push($data["pileTapis"],$cartes[0]);
+        $partie['couleurAtout'] = $cartes[0]["Couleur"]; 
+        array_push($partie["pileTapis"], $cartes[0]);
         array_splice($cartes, 0, 1);
 
         for($i = 0; $i < count($joueurs); $i++){
@@ -91,10 +97,21 @@
             $joueurs[$i]["cartes"]=array_merge($joueurs[$i]["cartes"], $cartesJoueur);
         }
         // on met à jour la section joueurs
-        $partie["joueurs"] = array_merge($partie["joueurs"], $joueurs);
+        $partie["joueurs"] = array_merge($partie["joueurs"], $joueurs);        
         // le reste des cartes est mis à jour dans le deck
         $partie["deck"]=array_merge($partie["deck"], $cartes);
         $randint = 0;
+        // tu peux compil dacc
+        //creation des equipes
+        $equipes = array();
+        for($i = 0; $i < 2; $i++){
+            $equipe = array(
+                'numero' => $i,
+                'pointsTotal' => 0
+            );
+            array_push($equipes, $equipe);
+        }
+        $partie["equipes"] = array_merge($partie["equipes"], $equipes);
         //$randint =  rand(0, 3);
         $partie["joueurCourant"] = $randint;
         

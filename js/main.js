@@ -16,7 +16,7 @@ function playersRefresh(timeoutPeriod){
     setInterval(majTapis, timeoutPeriod);
     setInterval(majChat, timeoutPeriod);
     setInterval(allowedtoDrop, timeoutPeriod);
-    setInterval(gameFinished, timeoutPeriod);
+    //setInterval(gameFinished, timeoutPeriod);
     
 }
 
@@ -44,21 +44,28 @@ function drop(ev){
     let carteTapis = data.split("_").map(Number);
     // appel ajax pour changer l'etat de la carte deposee sur le tapis
     if(ev.target.id == "tapisJeux"){
+        //ICI
         $.ajax({
-            method: 'POST',
-            data: {"url" : url_partie, "pseudo" : pseudo ,"couleur" : carteTapis[0], "valeur" : carteTapis[1]},
-            url : "../PHP/poserTapis.php",
-        }).done(function(data){
-            //Modification du champs derniereCarte du fichier JSON
-            $.ajax({
                 method: 'POST',
-                data : {"url" : url_partie},
-                url : '../PHP/dernierDepot.php',
+                data : {"url" : url_partie,"pseudo" : pseudo , "couleur" : carteTapis[0], "valeur" : carteTapis[1]},
+                url : '../PHP/gestionRegles.php',
             }).done(function(data){
+                $.ajax({
+                    method: 'POST',
+                    data: {"url" : url_partie, "pseudo" : pseudo ,"couleur" : carteTapis[0], "valeur" : carteTapis[1]},
+                    url : "../PHP/poserTapis.php",
+                }).done(function(data){              
+                    $.ajax({
+                        method: 'POST',
+                        data : {"url" : url_partie},
+                        url : '../PHP/dernierDepot.php',
+                    }).done(function(data){
+                    }).fail(function(data){
+                    });
+                }).fail(function(data){
+                });
+                // fin appel ajax gestionRegles
             }).fail(function(data){
-            });
-
-        }).fail(function(data){
         });
     }
 }
@@ -74,22 +81,10 @@ function allowedtoDrop(){
         var indexJoueur = e["joueurCourant"];
         if(e["joueurs"][indexJoueur]["pseudo"] === pseudo){
             $("#tapisJeux").attr('ondragover','allow_drop(event)');
-            /*$("#setJeux1").children('div').each(function () {
-                // "this" est l'élement courant de la boucle
-                var lienImage = $(this).children('img').attr('id');
-                $("#"+lienImage).attr('draggable',true);
-            });*/
         }
         
         else{
             $("#tapisJeux").attr('ondragover','');
-            /*
-            $("#setJeux1").children('div').each(function () {
-                // "this" est l'élement courant de la boucle
-                var lienImage = $(this).children('img').attr('id');
-                $("#"+lienImage).attr('draggable',false);
-            });*/
-
         }
     }).fail(function(e){
         console.log('fail');
@@ -106,36 +101,37 @@ function majTapis(){
         }).done(function(e) {
         $("#tapisJeux").empty();
         if(e != null){
-            for(var carteTapis in e['pileTapis']){
-                var couleurCarte = e["pileTapis"][carteTapis]["Couleur"];
-                var valeurCarte = e["pileTapis"][carteTapis]["Valeur"];
-                var maDiv = document.createElement("div");
-                var monimg = document.createElement("img");
-                monimg.setAttribute("id",couleurCarte+"_"+valeurCarte);
-                monimg.setAttribute("draggable", true);
-                monimg.setAttribute("ondragstart",'drag(event)');
-                monimg.setAttribute("src","../ImagesCartes/"+couleurCarte+"_"+valeurCarte+".png");
-                maDiv.appendChild(monimg);
-                document.getElementById("tapisJeux").appendChild(maDiv);
-            }
-            /*
-            // ouaip
-            for(let i = 0; i < 4; i++){
-                for(let pas = 0; pas < 5; pas++){ 
-                    if(e["joueurs"][i]["cartes"][pas]["carteTapis"]){
-                        var couleurCarte = e["joueurs"][i]["cartes"][pas]["Couleur"];
-                        var valeurCarte = e["joueurs"][i]["cartes"][pas]["Valeur"];
-                        var maDiv = document.createElement("div");
-                        var monimg = document.createElement("img");
-                        monimg.setAttribute("id",couleurCarte+"_"+valeurCarte);
-                        monimg.setAttribute("draggable", true);
-                        monimg.setAttribute("ondragstart",'drag(event)');
-                        monimg.setAttribute("src","../ImagesCartes/"+couleurCarte+"_"+valeurCarte+".png");
-                        maDiv.appendChild(monimg);
-                        document.getElementById("tapisJeux").appendChild(maDiv);
-                    }
+            var longueurTapisCarte = e['pileTapis'].length;
+            // c
+            console.log(["pileTapis"]);
+            if(longueurTapisCarte>4){
+                for(let i = longueurTapisCarte-4; i < longueurTapisCarte + 1; i++){
+                    var couleurCarte = e["pileTapis"][i]["Couleur"];
+                    var valeurCarte = e["pileTapis"][i]["Valeur"];//go teste
+                    var maDiv = document.createElement("div");
+                    var monimg = document.createElement("img");
+                    monimg.setAttribute("id",couleurCarte+"_"+valeurCarte);
+                    monimg.setAttribute("draggable", true);
+                    monimg.setAttribute("ondragstart",'drag(event)');
+                    monimg.setAttribute("src","../ImagesCartes/"+couleurCarte+"_"+valeurCarte+".png");
+                    maDiv.appendChild(monimg);
+                    document.getElementById("tapisJeux").appendChild(maDiv);
                 }
-            }*/
+            }
+            else{
+                for(var carteTapis in e['pileTapis']){ 
+                    var couleurCarte = e["pileTapis"][carteTapis]["Couleur"];
+                    var valeurCarte = e["pileTapis"][carteTapis]["Valeur"];
+                    var maDiv = document.createElement("div");
+                    var monimg = document.createElement("img");
+                    monimg.setAttribute("id",couleurCarte+"_"+valeurCarte);
+                    monimg.setAttribute("draggable", true);
+                    monimg.setAttribute("ondragstart",'drag(event)');
+                    monimg.setAttribute("src","../ImagesCartes/"+couleurCarte+"_"+valeurCarte+".png");
+                    maDiv.appendChild(monimg);
+                    document.getElementById("tapisJeux").appendChild(maDiv);
+                }
+            }
         }
         }).fail(function(e) {
     });
@@ -150,7 +146,6 @@ function envoyerMessage(){
     if(!(ligne.length == 0)){   
         $("#zoneDepotCartes").children('div').each(function () {
             // "this" est l'élement courant de la boucle
-            //console.log($(this).children('img').attr('src'));
             var lienImage = $(this).children('img').attr('src');
             $.ajax({
                 method: "POST",
@@ -443,6 +438,7 @@ function gameFinished(){
             pseudo = "";    
             url_partie = "";
             ingame = false;
+            players = Array();
             testInterval = setInterval(gameLaunchedForPlayer,500);
             $("#waiting-room").css('display', 'block');
             $("#game-frame").css('display', 'none');
